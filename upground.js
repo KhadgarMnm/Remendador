@@ -75,7 +75,7 @@ function putCommentsInTheirPlace() {
 }
 
 function main() {
-  removePagesDivs();
+  //removePagesDivs();
   removeDuplicateThreaderZero();
   putCommentsInTheirPlace();
 }
@@ -84,21 +84,32 @@ async function loadTopLevelComments() {
   const storyId = window.location.pathname.split('/')[2];
   let page = 2;
   let totalLoaded = 0;
+  const seen = new Set();
 
   while (true) {
     const url = `https://www.meneame.net/story/${storyId}/${page}`;
     try {
       const response = await fetch(url);
       const html = await response.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
 
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = html;
-
-      const topLevelComments = tempDiv.querySelectorAll('.threader.zero');
+      const topLevelComments = doc.querySelectorAll('.threader.zero');
       if (topLevelComments.length === 0) break;
 
       const commentsContainer = document.querySelector('#comments-top');
-      topLevelComments.forEach(c => commentsContainer.appendChild(c));
+
+      topLevelComments.forEach(threader => {
+        const commentDiv = threader.querySelector(':scope > .comment');
+        if (!commentDiv) return;
+
+        // Skip duplicates
+        if (seen.has(commentDiv.id)) return;
+        seen.add(commentDiv.id);
+
+        // Append a clone to avoid moving nodes from the temporary doc
+        commentsContainer.appendChild(threader.cloneNode(true));
+      });
 
       totalLoaded += topLevelComments.length;
       page++;
@@ -108,6 +119,7 @@ async function loadTopLevelComments() {
     }
   }
 }
+
 
   (async function () {
   try {
