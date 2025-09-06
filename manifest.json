@@ -1,0 +1,17 @@
+{
+	"manifest_version": 2,	
+	"version": "0.1",
+	"name": "Remendador de Menéame",
+	"description": "Un script en JavaScript para corregir el anidado de comentarios en Menéame cuando los usuarios citan con el formato no oficial #_N en lugar del estándar #N.",
+
+	"permissions": [
+		"tabs"
+	],
+
+	"content_scripts": [
+		{
+			"matches": ["*://*.meneame.net/story/*"],
+			"js": ["upground.js"]
+		}
+	]
+}
