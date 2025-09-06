@@ -75,7 +75,7 @@ function putCommentsInTheirPlace() {
 }
 
 function main() {
-  //removePagesDivs();
+  removePagesDivs();
   removeDuplicateThreaderZero();
   putCommentsInTheirPlace();
 }
